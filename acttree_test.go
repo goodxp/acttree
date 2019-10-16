@@ -10,15 +10,15 @@ func TestAdd(t *testing.T) {
 	var tree *Tree
 	tree = New()
 
-	v1 := v{x:1}
-	v2 := v{x:2}
-	v3 := v{x:3}
+	v1 := v{x: 1}
+	v2 := v{x: 2}
+	v3 := v{x: 3}
 
-	v4 := v{x:211}
-	v5 := v{x:212}
+	v4 := v{x: 211}
+	v5 := v{x: 212}
 
-	v6 := v{x:221}
-	v7 := v{x:222}
+	v6 := v{x: 221}
+	v7 := v{x: 222}
 
 	n1 := tree.Add(v1, nil)
 	n2 := tree.Add(v2, n1)
@@ -32,10 +32,10 @@ func TestAdd(t *testing.T) {
 	got := 0
 	want := 7
 
-	tree.WalkThrough(nil, DepthFirst, func (n *Node) bool {
+	tree.WalkThrough(nil, DepthFirst, func(n *Node) bool {
 		got++
-		
-		p,_ := n.Prev()
+
+		p, _ := n.Prev()
 		if n.parent != p {
 			t.Errorf("parent not retrieved %v", n)
 		}
@@ -61,7 +61,7 @@ func TestAdd(t *testing.T) {
 					t.Errorf("firstKid of %v shall be 2", n)
 				}
 			}
-			_,f := n.Next()
+			_, f := n.Next()
 			if len(f) != 2 {
 				t.Errorf("%v shall have 2 KidSibling(s)", n)
 			}
@@ -171,13 +171,13 @@ func TestAdd(t *testing.T) {
 			if n.firstKid != nil {
 				t.Errorf("%v shall have no firstKid", n)
 			}
-			_,f := n.Next()
+			_, f := n.Next()
 			if len(f) != 0 {
 				t.Errorf("%v shall have 0 KidSibling(s)", n)
 			}
 		}
 		return false
-	}, nil) 
+	}, nil)
 
 	if got != want {
 		t.Errorf("added %v nodes got %v", want, got)
@@ -188,12 +188,12 @@ func TestWalkThrough(t *testing.T) {
 	var tree *Tree
 	tree = New()
 
-	v1 := v{x:1}
-	v2 := v{x:2}
-	v3 := v{x:3}
+	v1 := v{x: 1}
+	v2 := v{x: 2}
+	v3 := v{x: 3}
 
-	v4 := v{x:211}
-	v5 := v{x:212}
+	v4 := v{x: 211}
+	v5 := v{x: 212}
 
 	n1 := tree.Add(v1, nil)
 	n2 := tree.Add(v2, n1)
@@ -204,13 +204,13 @@ func TestWalkThrough(t *testing.T) {
 	got := 0
 	want := 4
 
-	tree.WalkThrough(nil, BreathFirst, func (n *Node) bool {
+	tree.WalkThrough(nil, BreathFirst, func(n *Node) bool {
 		got++
 		if n.Value.(v).x == 211 {
 			return true
 		}
 		return false
-	}, nil) 
+	}, nil)
 
 	if got != want {
 		t.Errorf("shall stop on %v but on %v", want, got)
@@ -220,23 +220,23 @@ func TestWalkThrough(t *testing.T) {
 func TestCut(t *testing.T) {
 	var st *Tree
 	st = New()
-	st.Cut(st.Add(v{x:1004}, 
-		st.Add(v{x:1003}, 
-			st.Add(v{x:1002}, 
-				st.Add(v{x:1001}, nil)))))
+	st.Cut(st.Add(v{x: 1004},
+		st.Add(v{x: 1003},
+			st.Add(v{x: 1002},
+				st.Add(v{x: 1001}, nil)))))
 
 	var tree *Tree
 	tree = New()
 
-	v1 := v{x:1}
-	v2 := v{x:2}
-	v3 := v{x:3}
+	v1 := v{x: 1}
+	v2 := v{x: 2}
+	v3 := v{x: 3}
 
-	v4 := v{x:211}
-	v5 := v{x:212}
+	v4 := v{x: 211}
+	v5 := v{x: 212}
 
-	v6 := v{x:221}
-	v7 := v{x:222}
+	v6 := v{x: 221}
+	v7 := v{x: 222}
 
 	n1 := tree.Add(v1, nil)
 	n2 := tree.Add(v2, n1)
@@ -255,10 +255,10 @@ func TestCut(t *testing.T) {
 	got := 0
 	want := 7
 
-	tree.WalkThrough(nil, DepthFirst, func (n *Node) bool {
+	tree.WalkThrough(nil, DepthFirst, func(n *Node) bool {
 		got++
 
-		p,_ := n.Prev()
+		p, _ := n.Prev()
 		if n.parent != p {
 			t.Errorf("parent not retrieved %v", n)
 		}
@@ -392,7 +392,7 @@ func TestCut(t *testing.T) {
 			}
 		}
 		return false
-	}, nil) 
+	}, nil)
 
 	if got != want {
 		t.Errorf("added %v nodes got %v", want, got)
@@ -400,10 +400,10 @@ func TestCut(t *testing.T) {
 
 	got = 0
 	want = 3
-	stnew.WalkThrough(nil, FirstKidOnly, func (n *Node) bool {
+	stnew.WalkThrough(nil, FirstKidOnly, func(n *Node) bool {
 		got++
 
-		p,_ := n.Prev()
+		p, _ := n.Prev()
 		if n.parent != p {
 			t.Errorf("parent not retrieved %v", n)
 		}
@@ -471,20 +471,20 @@ func TestCut(t *testing.T) {
 func TestRemove(t *testing.T) {
 	var st *Tree
 	st = New()
-	st.Add(v{x:1003}, st.Add(v{x:1002}, st.Add(v{x:1001}, nil)))
+	st.Add(v{x: 1003}, st.Add(v{x: 1002}, st.Add(v{x: 1001}, nil)))
 
 	var tree *Tree
 	tree = New()
 
-	v1 := v{x:1}
-	v2 := v{x:2}
-	v3 := v{x:3}
+	v1 := v{x: 1}
+	v2 := v{x: 2}
+	v3 := v{x: 3}
 
-	v4 := v{x:211}
-	v5 := v{x:212}
+	v4 := v{x: 211}
+	v5 := v{x: 212}
 
-	v6 := v{x:221}
-	v7 := v{x:222}
+	v6 := v{x: 221}
+	v7 := v{x: 222}
 
 	n1 := tree.Add(v1, nil)
 	n2 := tree.Add(v2, n1)
@@ -503,10 +503,10 @@ func TestRemove(t *testing.T) {
 	got := 0
 	want := 7
 
-	tree.WalkThrough(nil, DepthFirst, func (n *Node) bool {
+	tree.WalkThrough(nil, DepthFirst, func(n *Node) bool {
 		got++
 
-		p,_ := n.Prev()
+		p, _ := n.Prev()
 		if n.parent != p {
 			t.Errorf("parent not retrieved %v", n)
 		}
@@ -640,7 +640,7 @@ func TestRemove(t *testing.T) {
 			}
 		}
 		return false
-	}, nil) 
+	}, nil)
 
 	if got != want {
 		t.Errorf("added %v nodes got %v", want, got)
@@ -657,15 +657,15 @@ func TestPrevNext(t *testing.T) {
 	var tree *Tree
 	tree = New()
 
-	v1 := v{x:1}
-	v2 := v{x:2}
-	v3 := v{x:3}
+	v1 := v{x: 1}
+	v2 := v{x: 2}
+	v3 := v{x: 3}
 
-	v4 := v{x:211}
-	v5 := v{x:212}
+	v4 := v{x: 211}
+	v5 := v{x: 212}
 
-	v6 := v{x:221}
-	v7 := v{x:222}
+	v6 := v{x: 221}
+	v7 := v{x: 222}
 
 	n1 := tree.Add(v1, nil)
 	n2 := tree.Add(v2, n1)
@@ -681,7 +681,7 @@ func TestPrevNext(t *testing.T) {
 	want := 3
 	var tail *Node
 
-	for n := tree.Root; n != nil; n,_ = n.Next() {
+	for n := tree.Root; n != nil; n, _ = n.Next() {
 		tail = n
 		got++
 	}
@@ -691,7 +691,7 @@ func TestPrevNext(t *testing.T) {
 	}
 
 	got = 0
-	for n := tail; n != nil; n,_ = n.Prev() {
+	for n := tail; n != nil; n, _ = n.Prev() {
 		got++
 	}
 
