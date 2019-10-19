@@ -61,7 +61,6 @@ func (t *Tree) AddNode(n, prev *Node) (added *Node) {
 		return n
 	}
 
-	x := prev
 	for x.nextSibling != nil {
 		x = x.nextSibling
 	}
