@@ -24,9 +24,9 @@ func TestAdd(t *testing.T) {
 	n2 := tree.Add(v2, n1)
 	tree.Add(v3, n2)
 
-	n4 := tree.Add(v4, n2)
+	n4 := tree.Add(v4, n1)
 	tree.Add(v5, n4)
-	n6 := tree.Add(v6, n2)
+	n6 := tree.Add(v6, n1)
 	tree.Add(v7, n6)
 
 	got := 0
@@ -196,9 +196,9 @@ func TestWalkThrough(t *testing.T) {
 	v5 := v{x: 212}
 
 	n1 := tree.Add(v1, nil)
-	n2 := tree.Add(v2, n1)
-	tree.Add(v3, n2)
-	n4 := tree.Add(v4, n2)
+	tree.Add(v2, n1)
+	tree.Add(v3, n1)
+	n4 := tree.Add(v4, n1)
 	tree.Add(v5, n4)
 
 	got := 0
@@ -242,12 +242,12 @@ func TestCut(t *testing.T) {
 	n2 := tree.Add(v2, n1)
 	tree.Add(v3, n2)
 
-	n4 := tree.Add(v4, n2)
+	n4 := tree.Add(v4, n1)
 	tree.Add(v5, n4)
 
-	tree.AddNode(st.Root, n2)
+	tree.AddNode(st.Root, n1)
 
-	n6 := tree.Add(v6, n2)
+	n6 := tree.Add(v6, n1)
 	tree.Add(v7, n6)
 
 	stnew := tree.Cut(st.Root) //for testing Cut()
@@ -490,12 +490,12 @@ func TestRemove(t *testing.T) {
 	n2 := tree.Add(v2, n1)
 	tree.Add(v3, n2)
 
-	n4 := tree.Add(v4, n2)
+	n4 := tree.Add(v4, n1)
 	tree.Add(v5, n4)
 
-	tree.AddNode(st.Root, n2)
+	tree.AddNode(st.Root, n1)
 
-	n6 := tree.Add(v6, n2)
+	n6 := tree.Add(v6, n1)
 	tree.Add(v7, n6)
 
 	c := tree.Remove(st.Root) //for testing Remove()
@@ -671,10 +671,10 @@ func TestPrevNext(t *testing.T) {
 	n2 := tree.Add(v2, n1)
 	tree.Add(v3, n2)
 
-	n4 := tree.Add(v4, n2)
+	n4 := tree.Add(v4, n1)
 	tree.Add(v5, n4)
 
-	n6 := tree.Add(v6, n2)
+	n6 := tree.Add(v6, n1)
 	tree.Add(v7, n6)
 
 	got := 0

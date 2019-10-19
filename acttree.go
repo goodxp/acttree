@@ -44,9 +44,9 @@ func New() *Tree {
 }
 
 // AddNode adds a new kid or sibling node to the tree.
-// The new node will be added after the param node.
-// When the param node has no kid, new node is added as kid,
-// or it is added as a sibling.
+// The new node will be added after the prev node.
+// When the prev node has no kid, new node is added as firstKid,
+// or it is added as a sibling of firstKid.
 // Note that the new node can be the root of another tree,
 // making it a merge(join) function of trees.
 func (t *Tree) AddNode(n, prev *Node) (added *Node) {
@@ -55,10 +55,15 @@ func (t *Tree) AddNode(n, prev *Node) (added *Node) {
 		return n
 	}
 
-	if prev.firstKid == nil {
-		prev.firstKid = n
-		n.parent = prev
-		return n
+	x := t.Root.nextSibling
+
+	if prev != nil {
+		if prev.firstKid == nil {
+			prev.firstKid = n
+			n.parent = prev
+			return n
+		}
+		x = prev.firstKid
 	}
 
 	for x.nextSibling != nil {
@@ -98,7 +103,7 @@ func (t *Tree) Cut(n *Node) (subTree *Tree) {
 			if n.nextSibling != nil {
 				n.nextSibling.prevSibling = nil
 			}
-		} else { //x is sibling
+		} else {
 			prev.nextSibling = n.nextSibling
 			if n.nextSibling != nil {
 				n.nextSibling.prevSibling = prev
