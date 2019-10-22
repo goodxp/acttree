@@ -32,7 +32,7 @@ func TestAdd(t *testing.T) {
 	got := 0
 	want := 7
 
-	tree.WalkThrough(nil, DepthFirst, func(n *Node) bool {
+	WalkThrough(tree.Root, func(n *Node) bool {
 		got++
 
 		p, _ := n.Prev()
@@ -60,10 +60,6 @@ func TestAdd(t *testing.T) {
 				if n.firstKid.Value.(v).x != 2 {
 					t.Errorf("firstKid of %v shall be 2", n)
 				}
-			}
-			_, f := n.Next()
-			if len(f) != 2 {
-				t.Errorf("%v shall have 2 KidSibling(s)", n)
 			}
 		case 2:
 			if n.parent.Value.(v).x != 1 {
@@ -171,10 +167,6 @@ func TestAdd(t *testing.T) {
 			if n.firstKid != nil {
 				t.Errorf("%v shall have no firstKid", n)
 			}
-			_, f := n.Next()
-			if len(f) != 0 {
-				t.Errorf("%v shall have 0 KidSibling(s)", n)
-			}
 		}
 		return false
 	}, nil)
@@ -204,7 +196,7 @@ func TestWalkThrough(t *testing.T) {
 	got := 0
 	want := 4
 
-	tree.WalkThrough(nil, BreathFirst, func(n *Node) bool {
+	WalkThrough(tree.Root, func(n *Node) bool {
 		got++
 		if n.Value.(v).x == 211 {
 			return true
@@ -255,7 +247,7 @@ func TestCut(t *testing.T) {
 	got := 0
 	want := 7
 
-	tree.WalkThrough(nil, DepthFirst, func(n *Node) bool {
+	WalkThrough(tree.Root, func(n *Node) bool {
 		got++
 
 		p, _ := n.Prev()
@@ -400,7 +392,7 @@ func TestCut(t *testing.T) {
 
 	got = 0
 	want = 3
-	stnew.WalkThrough(nil, FirstKidOnly, func(n *Node) bool {
+	WalkThrough(stnew.Root, func(n *Node) bool {
 		got++
 
 		p, _ := n.Prev()
@@ -503,7 +495,7 @@ func TestRemove(t *testing.T) {
 	got := 0
 	want := 7
 
-	tree.WalkThrough(nil, DepthFirst, func(n *Node) bool {
+	WalkThrough(tree.Root, func(n *Node) bool {
 		got++
 
 		p, _ := n.Prev()

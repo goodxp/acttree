@@ -25,14 +25,40 @@ func (n *Node) Prev() (parent *Node, prevSibling *Node) {
 	return n.parent, n.prevSibling
 }
 
-func (n *Node) Next() (kid *Node, kidSiblings []*Node) {
-	var k []*Node
-	if n.firstKid != nil {
-		for x := n.firstKid.nextSibling; x != nil; x = x.nextSibling {
-			k = append(k, x)
-		}
+func (n *Node) Next() (kid *Node, nextSibling *Node) {
+	return n.firstKid, n.nextSibling
+}
+
+func (n *Node) Add(v interface{}) (added *Node) {
+	return n.addNode(&Node{Value: v}, false)
+}
+
+func (n *Node) addNode(ret *Node, asRootSib bool) (added *Node) {
+	if n.firstKid == nil {
+		n.firstKid = ret
+		ret.parent = n
+		return ret
 	}
-	return n.firstKid, k
+
+	x := n.firstKid
+	if asRootSib {
+		x = n
+	}
+
+	for x.nextSibling != nil {
+		x = x.nextSibling
+	}
+	x.nextSibling = ret
+	ret.prevSibling = x
+	ret.parent = x.parent
+	return ret
+}
+
+func (n *Node) HasSib() bool {
+	if n.prevSibling != nil || n.nextSibling != nil {
+		return true
+	}
+	return false
 }
 
 type Tree struct {
@@ -54,26 +80,10 @@ func (t *Tree) AddNode(n, prev *Node) (added *Node) {
 		t.Root = n
 		return n
 	}
-
-	x := t.Root.nextSibling
-
-	if prev != nil {
-		if prev.firstKid == nil {
-			prev.firstKid = n
-			n.parent = prev
-			return n
-		}
-		x = prev.firstKid
+	if prev == nil {
+		return t.Root.addNode(n, true)
 	}
-
-	for x.nextSibling != nil {
-		x = x.nextSibling
-	}
-
-	x.nextSibling = n
-	n.prevSibling = x
-	n.parent = x.parent
-	return n
+	return prev.addNode(n, false)
 }
 
 // Add is a convenience wrapper for AddNode(&Node{Value: v}, prev)
@@ -81,9 +91,49 @@ func (t *Tree) Add(v interface{}, prev *Node) (added *Node) {
 	return t.AddNode(&Node{Value: v}, prev)
 }
 
+// Remove deletes a node and all its kids from tree.
+func (t *Tree) Remove(n *Node) int {
+	r := t.cut(n)
+	if r == nil {
+		return 0
+	}
+
+	c := 0
+
+	for r.nextSibling != nil {
+		c += t.Remove(r.nextSibling)
+	}
+
+	for r.firstKid != nil {
+		c += t.Remove(r.firstKid)
+	}
+
+	//clean up for preventing memory leak
+	n.parent = nil
+	n.prevSibling = nil
+	n.nextSibling = nil
+	n.firstKid = nil
+	n.Value = nil
+
+	n = nil
+	c++
+
+	return c
+}
+
 // Cut cuts a subtree off the original, with the given node
 // being root of the new tree.
 func (t *Tree) Cut(n *Node) (subTree *Tree) {
+	nr := t.cut(n)
+	if nr != nil {
+		var nt = new(Tree)
+		nt.Root = nr
+		return nt
+	}
+	return nil
+}
+
+func (t *Tree) cut(n *Node) *Node {
 	if (n == nil) || (t.Root == nil) {
 		return nil
 	}
@@ -115,112 +165,48 @@ func (t *Tree) Cut(n *Node) (subTree *Tree) {
 	n.prevSibling = nil
 	n.nextSibling = nil
 
-	var nt = new(Tree)
-	nt.Root = n
-	return nt
+	return n
 }
 
-type WalkThroughMethod int
-
-const (
-	FirstKidOnly WalkThroughMethod = iota
-	DepthFirst
-	BreathFirst
-)
-
-// WalkThrough goes over nodes in tree by the order defined in WalkThroughMethod.
-// It will call the user-defined node handler enter() and leave() on each node.
-// enter() is called before all its later nodes called in WalkThroughMethod order.
-// leave() is called after all its later nodes called.
-// enter() and leave() must return false to keep the WalkThrough loop continue.
-// Returns true means to stop visiting the other nodes, job done.
-func (t *Tree) WalkThrough(n *Node, m WalkThroughMethod,
-	enter func(*Node) bool, leave func(*Node) bool) {
-
-	var stopWalk = false
-	if stopWalk {
+// WalkThrough iterates over "n" and its kid nodes.
+// enter() and leave() called before and after visiting all kid nodes.
+// return from enter() and leave(): true = end WalkThrough; false = continue.
+func WalkThrough(n *Node, enter func(*Node) bool, leave func(*Node) bool) {
+	if n == nil {
 		return
 	}
 
-	s := n //starting point
-	if s == nil {
-		s = t.Root
-	}
-	if s == nil {
+	if walk(n, enter, leave) {
 		return
-	} //empty tree
+	}
 
+	if n.prevSibling == nil && n.parent == nil { //t.Root
+		for n_ := n.nextSibling; n_ != nil; n_ = n_.nextSibling {
+			if walk(n_, enter, leave) {
+				return
+			}
+		}
+	}
+}
+
+func walk(n *Node, enter func(*Node) bool, leave func(*Node) bool) bool {
 	if enter != nil {
-		stopWalk = enter(s)
-		if stopWalk {
-			return
+		if enter(n) {
+			return true
 		}
 	}
 
-	switch m {
-	case DepthFirst:
-		if s.firstKid != nil {
-			t.WalkThrough(s.firstKid, DepthFirst, enter, leave)
-			if stopWalk {
-				return
-			}
-		}
-		if s.nextSibling != nil {
-			t.WalkThrough(s.nextSibling, DepthFirst, enter, leave)
-			if stopWalk {
-				return
-			}
-		}
-	case FirstKidOnly:
-		if s.firstKid != nil {
-			t.WalkThrough(s.firstKid, FirstKidOnly, enter, leave)
-			if stopWalk {
-				return
-			}
-		}
-	case BreathFirst:
-		if s.nextSibling != nil {
-			t.WalkThrough(s.nextSibling, BreathFirst, enter, leave)
-			if stopWalk {
-				return
-			}
-		}
-		if s.firstKid != nil {
-			t.WalkThrough(s.firstKid, BreathFirst, enter, leave)
-			if stopWalk {
-				return
-			}
+	for n_ := n.firstKid; n_ != nil; n_ = n_.nextSibling {
+		if walk(n_, enter, leave) {
+			return true
 		}
 	}
 
 	if leave != nil {
-		stopWalk = leave(s)
-		if stopWalk {
-			return
+		if leave(n) {
+			return true
 		}
 	}
-}
 
-// Remove deletes a node and all its kids from tree.
-func (t *Tree) Remove(n *Node) int {
-	st := t.Cut(n)
-	if st == nil {
-		return 0
-	}
-
-	c := 0
-	st.WalkThrough(nil, DepthFirst, nil, func(x *Node) bool {
-		c++
-
-		//clean up for preventing memory leak
-		x.parent = nil
-		x.prevSibling = nil
-		x.nextSibling = nil
-		x.firstKid = nil
-		x.Value = nil
-
-		return false
-	})
-
-	return c
+	return false
 }
